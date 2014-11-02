@@ -11,6 +11,8 @@
  #include <time.h>
 using namespace std;
 /* BorelSets http://community.topcoder.com/stat?c=problem_statement&pm=2322&rd=5003 */
+/* solution : http://community.topcoder.com/tc?module=Static&d1=match_editorials&d2=tccc04_qual_4
+ http://apps.topcoder.com/forums/;jsessionid=E24D4398F8A31C949256E997D88A5654?module=Thread&threadID=242932&messageID=242931&mc=4&view=tree#242931 */ 
 
 int createField(string field)
 {
