@@ -14,6 +14,7 @@ using namespace std;
 #define OVERCOST 50
 #define OVERDEDUCTCOST 20
 #define EQUALCOST 50
+#define MAXWORKERALLOWED 6
 
 class GoldMine
 {
@@ -65,7 +66,7 @@ vector<int> GoldMine::getAllocation( vector< vector<int> > &mines, int miners )
 		int maxProfit = 0;
 		for (int idx = 0; idx < size; ++idx)
 		{
-			if (result[idx] < 6)
+			if (result[idx] < MAXWORKERALLOWED)
 			{
 				int temp = getProfit(mines[idx], result[idx] + 1);
 
