@@ -17,7 +17,37 @@ private:
 	std::unordered_map<string, int> memo;
 public:
 	int minStrokesRec(string stripes);
+	int minStrokesDP(string stripes);
 };
+
+int StripePainter::minStrokesDP(string stripes)
+{
+	int len = stripes.length();
+	vector <vector<int> > dp(len, vector<int>(len) );
+
+	for (int idx = 0; idx < len; ++idx)
+	{
+		dp[idx][idx] = 1;
+	}
+
+	for (int gap = 1; gap < len; ++gap)
+	{
+		for (int i = 0, j = gap; j < len; ++i, ++j)
+		{
+			int min = INT_MAX;
+
+			for (int k = i; k < j; ++k)
+			{
+				int d = stripes[i] == stripes[j];
+
+				min = std::min( min, dp[i][k] + dp[k + 1][j] - d );
+			}
+
+			dp[i][j] = min;
+		}
+	}
+	return dp[0][len - 1];
+}
 
 int StripePainter::minStrokesRec(string stripes)
 {
@@ -62,7 +92,7 @@ void TEST( string stripes, int expected )
 
 	StripePainter stripePainter;
 
-	int result = stripePainter.minStrokesRec(stripes);
+	int result = stripePainter.minStrokesDP(stripes);
 
 	end = clock();
 	cpu_time_used = ((double) (end - start));
@@ -102,7 +132,6 @@ void Test6()
 	TEST( "ABABABABABABABABABABABABABABABABABABABABABABABABAB", 26);
 	TEST( "DEJJEDAIJHBFCEGHFEADCJAIIGKBF", 21);
 	TEST( "ABACDBABDFDFJDFDFBCCABDBABABDBBCBCDBABCBJIEDF", 27);
-	
 }
 
 int main()
