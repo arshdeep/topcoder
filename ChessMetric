@@ -39,7 +39,7 @@ long ChessMetric::howMany(int size, int startx, int starty, int endx, int endy, 
                 + howMany(size, startx + 2, starty + 1, endx, endy, numMoves - 1)
                 + howMany(size, startx - 2, starty - 1, endx, endy, numMoves - 1)
                 + howMany(size, startx - 2, starty + 1, endx, endy, numMoves - 1)
-                + howMany(size, startx + 1, starty - 1, endx, endy, numMoves - 1)
+                + howMany(size, startx + 2, starty - 1, endx, endy, numMoves - 1)
 
                 + howMany(size, startx + 1, starty + 2, endx, endy, numMoves - 1)
                 + howMany(size, startx - 1, starty - 2, endx, endy, numMoves - 1)
@@ -88,11 +88,35 @@ void Test4()
     int start[2] = {5,5};
     int end[2] = {9,9};
     long result = chessMetric.howMany(10, start, end, 4);
-    assert ( result == 133);
+ assert(result==133);
 }
+void Test5()
+{
+    ChessMetric chessMetric;
+    int start[2] = {4,4};
+    int end[2] = {4,4};
+    long result = chessMetric.howMany(8, start, end, 6);
+ 
+    assert ( result == 246460);
+}
+void Test6()
+{
+    ChessMetric chessMetric;
+    int start[2] = {3,7};
+    int end[2] = {11,5};
+    long result = chessMetric.howMany(13, start, end, 4);
+ 
+    assert ( result == 4);
+}
+
 
 int main()
 {
+Test1();
+Test2();
+Test3();
     Test4();
+Test5();
+Test6();
     return 0;
 }
