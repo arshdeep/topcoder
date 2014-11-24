@@ -1,0 +1,98 @@
+#include <algorithm>
+#include <string>
+#include <iostream>
+#include <vector>
+#include <cassert>
+using namespace std;
+class ChessMetric
+{
+    long howMany(int size, int startx, int starty, int endx, int endy, int numMoves);
+public:
+    long howMany(int size, int start[2], int end[2], int numMoves);
+};
+
+long ChessMetric::howMany(int size, int startx, int starty, int endx, int endy, int numMoves)
+{
+    if (startx < 0 || starty < 0
+        || startx >= size || starty >= size)
+    {
+        return 0;
+    }
+
+    long maxMoves = 0;
+    if (numMoves == 0)
+    {
+        return startx == endx && starty == endy ? 1 : 0;
+    }
+    else
+    {
+        maxMoves = howMany(size, startx + 1, starty, endx, endy, numMoves - 1)
+                + howMany(size, startx - 1, starty, endx, endy, numMoves - 1)
+                + howMany(size, startx, starty + 1, endx, endy, numMoves - 1)
+                + howMany(size, startx, starty - 1, endx, endy, numMoves - 1)
+        
+                + howMany(size, startx - 1, starty - 1, endx, endy, numMoves - 1)
+                + howMany(size, startx + 1, starty + 1, endx, endy, numMoves - 1)
+                + howMany(size, startx - 1, starty + 1, endx, endy, numMoves - 1)
+                + howMany(size, startx + 1, starty - 1, endx, endy, numMoves - 1)
+
+                + howMany(size, startx + 2, starty + 1, endx, endy, numMoves - 1)
+                + howMany(size, startx - 2, starty - 1, endx, endy, numMoves - 1)
+                + howMany(size, startx - 2, starty + 1, endx, endy, numMoves - 1)
+                + howMany(size, startx + 1, starty - 1, endx, endy, numMoves - 1)
+
+                + howMany(size, startx + 1, starty + 2, endx, endy, numMoves - 1)
+                + howMany(size, startx - 1, starty - 2, endx, endy, numMoves - 1)
+                + howMany(size, startx + 1, starty - 2, endx, endy, numMoves - 1)
+                + howMany(size, startx - 1, starty + 2, endx, endy, numMoves - 1);
+    }
+    return maxMoves;
+}
+
+long ChessMetric::howMany(int size, int start[2], int end[2], int numMoves)
+{
+    
+    return howMany( size,  start[0],  start[1],  end[0],  end[1],  numMoves);
+}
+
+void Test1()
+{
+    ChessMetric chessMetric;
+    int start[2] = {0,0};
+    int end[2] = {1,0};
+    long result = chessMetric.howMany(3, start, end, 1);
+    assert ( result == 1);
+}
+
+void Test2()
+{
+    ChessMetric chessMetric;
+    int start[2] = {0,0};
+    int end[2] = {1,2};
+    long result = chessMetric.howMany(3, start, end, 1);
+    assert ( result == 1);
+}
+
+void Test3()
+{
+    ChessMetric chessMetric;
+    int start[2] = {0,0};
+    int end[2] = {0,0};
+    long result = chessMetric.howMany(3, start, end, 2);
+    assert ( result == 5);
+}
+
+void Test4()
+{
+    ChessMetric chessMetric;
+    int start[2] = {5,5};
+    int end[2] = {9,9};
+    long result = chessMetric.howMany(10, start, end, 4);
+    assert ( result == 133);
+}
+
+int main()
+{
+    Test4();
+    return 0;
+}
