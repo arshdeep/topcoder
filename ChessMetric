@@ -13,6 +13,7 @@ private:
     int dx[16] = {1, -1, 0, 0, -1, 1, -1, 1, 2, -2, -2, 2, 1, -1, 1, -1};
     int dy[16] = {0, 0, 1, -1, -1, 1, 1, -1, 1, -1, 1, -1, 2, -2, -2, 2};
     long howMany(int size, int startx, int starty, int endx, int endy, int numMoves);
+    long howManyDP(int size, int startx, int starty, int endx, int endy, int numMoves);
 public:
     ChessMetric()
     {
@@ -21,18 +22,36 @@ public:
     long howMany(int size, int start[2], int end[2], int numMoves);
 };
 
+long ChessMetric::howManyDP(int size, int startx, int starty, int endx, int endy, int numMoves)
+{
+    memset(memo, 0, sizeof(memo));
+    memo[startx][starty][0] = 1;
+
+    for (int k = 1; k <= numMoves; ++k)
+    {
+        for (int x = 0; x < size; ++x)
+         {
+             for (int y = 0; y < size; ++y)
+             {
+                 for (int i = 0; i < 16; ++i)
+                 {
+                     int deltax = x + dx[i];
+                     int deltay = y + dy[i];
+                     if ((deltax >= 0 && deltax < size) && (deltay >= 0 && deltay < size))
+                     {
+                         long temp = memo[deltax][deltay][k - 1];
+                         memo[x][y][k] +=temp;
+                     }
+                 }
+             }
+         }
+     }
+    
+    return memo[endx][endy][numMoves];
+}
+
 long ChessMetric::howMany(int size, int startx, int starty, int endx, int endy, int numMoves)
 {
-    if (startx < 0 || starty < 0
-        || startx >= size || starty >= size)
-    {
-        return 0;
-    }
-    
-    long m = memo[startx][starty][numMoves];
-    if (m != -1)
-        return m;
-    
     long maxMoves = 0;
     if (numMoves == 0)
     {
@@ -40,6 +59,11 @@ long ChessMetric::howMany(int size, int startx, int starty, int endx, int endy, 
     }
     else
     {
+        long m = memo[startx][starty][numMoves];
+        
+        if (m != -1)
+            return m;
+
         for (int i = 0; i < 16; ++i)
         {
             int deltax = startx + dx[i];
@@ -58,7 +82,7 @@ long ChessMetric::howMany(int size, int startx, int starty, int endx, int endy, 
 long ChessMetric::howMany(int size, int start[2], int end[2], int numMoves)
 {
     
-    return howMany( size,  start[0],  start[1],  end[0],  end[1],  numMoves);
+    return howManyDP( size,  start[0],  start[1],  end[0],  end[1],  numMoves);
 }
 
 void TEST(int size, int startA[2], int endA[2], int numMoves, long expected)
