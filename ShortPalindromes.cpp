@@ -14,7 +14,7 @@ using namespace std;
 
 class ShortPalindromes
 {
-	unordered_map<string, string> memo;
+	map<string, string> memo;
 private :
 	string &lexicographicalCmp(string &s1, string &s2)
 	{
@@ -30,7 +30,44 @@ private :
 	bool isPlaindrome(const string &str);
 public:
 	string shortest(string base);
+	string shortestDP(string base);
 };
+
+string ShortPalindromes::shortestDP(string base)
+{
+	int len = base.length();
+	vector< vector<string> > dp(len, vector<string> (len) );
+
+	for (int i = 0; i < len; ++i)
+	{
+		dp[i][i] = base[i];
+	}
+
+	for (int gap = 1; gap < len; ++gap)
+	{
+		for (int i = 0, j = gap; j < len; ++i, ++j)
+		{
+			string c1 = dp[i][i];
+			string c2 = dp[j][j];
+
+			if (c1 == c2)
+			{
+				dp[i][j] = c1 + dp[i + 1][j - 1] + c1;
+			}
+			else
+			{
+				string s = dp[i + 1][j];
+				string p = dp[i][j - 1];
+				string str1 = c1 + s + c1;
+				string str2 = c2 + p + c2;
+
+				dp[i][j] = lexicographicalCmp(str1, str2);
+			}
+		}
+	}
+
+	return dp[0][len - 1];
+}
 
 bool ShortPalindromes::isPlaindrome(const string &str)
 {
@@ -63,7 +100,7 @@ string ShortPalindromes::shortest(string base)
 		string r1;
 		string r2;
 
-		unordered_map<string, string>::iterator itr = memo.find(sub1);
+		map<string, string>::iterator itr = memo.find(sub1);
 		if (itr == memo.end())
 		{
 			r1 = shortest(sub1);
@@ -96,7 +133,7 @@ void TEST(string base, string expected)
 	start = clock();
 	ShortPalindromes shortPalindromes;
 
-	string result = shortPalindromes.shortest(base);
+	string result = shortPalindromes.shortestDP(base);
 	
 	assert( result.compare(expected) == 0 );
 
