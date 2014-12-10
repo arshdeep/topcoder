@@ -146,15 +146,7 @@ int PathFinding::minTurns(vector<string> board)
                             && dX2 >= 0 && dX2 < height && dY2 >= 0 && dY2 < width)
                         {
                             if (board[dX1][dY1] != 'X' && board[dX2][dY2] != 'X')
-                            {
-                                
                                 pushToQueue(node(dX1, dY1, dX2, dY2, front.steps + 1));
-                            }
-                            /*else if (board[dX1][dY1] == 'X' && board[dX2][dY2] != 'X')
-                                pushToQueue(node(front.player1X, front.player1Y, dX2, dY2, front.steps + 1));
-                            else if (board[dX1][dY1] != 'X' && board[dX2][dY2] == 'X')
-                                pushToQueue(node(dX1, dY1, front.player2X, front.player2Y, front.steps + 1));*/
-
                         }
                     }
                 }
