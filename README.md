@@ -3,6 +3,6 @@ topcoder
 
 topcoder problems.
 
-In pursuit knowledge.
+In pursuit of knowledge.
 
 For practice purposes only.
