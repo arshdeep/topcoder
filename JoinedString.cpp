@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <time.h>
 using namespace std;
+/* http://topcoder.bgcoder.com/print.php?id=1244 */
 #define SIZEOFSTRINGARRAY(s) sizeof(s)/sizeof(s[0])
 class JoinedString
 {
