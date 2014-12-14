@@ -23,42 +23,36 @@ string JoinedString::joinWords(vector<string> words)
 	vector<string> dp(len);
 
 	//std::sort(words.begin(), words.end());
-
 	dp[0] = words[0];
-	for (int i = 1; i < len; ++i)
+	for (int i = 0; i < len; ++i)
 	{
-		int target = i;
-		for (int j = 0; j < i; ++j)
+		string s1 = dp[i];
+		string result = "";
+		for (int j = 0; j < len; ++j)
 		{
-			string s1 = dp[j];
-			string s2 = words[target];
-			bool isSubstring = s1.find(s2) > -1;
-
-			if (!isSubstring)
+			if (i != j)
 			{
-				int s2Len = s2.length();
-				int s1Len = s1.length();
-				int idx = 0;
-				for(int k = 1; k <= std::min(s1Len, s2Len); ++k)
-				{
-					string substr1 = s1.substr(s1Len - k);
-					string substr2 = s2.substr(0, k);
+				string s2 = words[j];
+				if (s1.find(s2) != string::npos) continue;
 
-					if (substr1.compare(substr2) == 0)
+				int result = s1.compare(s2);
+
+				if (result == -1)
+					s1.swap(s2);
+				else if (result == 0) continue;
+
+				for (int k = 1, s1Size = s1.length(); k < s1Size; ++k)
+				{
+					string sub1 = s1.substr(s1.size() - k, k);
+
+					for (int kk = j; kk < len; ++kk)
 					{
-						idx = k;
-					}
-				}
-				s2 = s2.substr(idx);
-				string t3 = dp[j] + s2;
 
-				if (dp[j + 1].empty() || dp[j + 1].length() > t3.length())
-				{
-					dp[j + 1] = t3;
-					target = j + 1;
+					}
 				}
 			}
 		}
+
 	}
 
 	return dp[len - 1];
