@@ -56,7 +56,9 @@ string JoinedString::joinWords(vector<string> wordsList)
 			common[i][j] = "";
 			if (i != j)
 			{
-				if (wordsList[j].find(wordsList[i]) == string::npos)
+				string w1 = wordsList[i];
+				string w2 = wordsList[j];
+				if (w2.find(w1) != -1)
 				{
 					ok = false;
 					break;
@@ -173,7 +175,9 @@ void Test4()
 
 void Test5()
 {
+    string test[] = {"STRING", "RING"};
     
+    TEST(convert(test, SIZEOFSTRINGARRAY(test)), "STRING");
 }
 
 void Test6()
@@ -187,6 +191,9 @@ void Test7()
 
 int main()
 {
+    Test1();
+    Test2();
+    Test3();
     Test4();
     Test5();
     Test6();
