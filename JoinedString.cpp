@@ -11,69 +11,107 @@
 using namespace std;
 /* http://topcoder.bgcoder.com/print.php?id=1244 */
 #define SIZEOFSTRINGARRAY(s) sizeof(s)/sizeof(s[0])
+	string memo[12][1<<12];
+	string common[12][12];
+
 class JoinedString
 {
+	size_t len;
+	string dp(int current, int mask);
 public:
     string joinWords(vector<string> words);
 };
 
-string lesser(string lhs, string rhs)
+string JoinedString::dp(int current, int mask)
 {
-    int result = lhs.compare(rhs);
-    
-    return result == -1 ? lhs : rhs;
+	string &memoval = memo[current][mask];
+
+	if (memoval != "") return memoval;
+	if (!mask) return "";
+
+	for (size_t i = 0, size = len; i < size; ++i)
+	{
+		if (mask & (1 << i))
+		{
+			string temp = common[current][i] + dp(i, mask ^ (1 << i));
+			if (memoval == "" || (temp.length() < memoval.length() || temp.length() == memoval.length() && temp < memoval))
+			{
+				memoval = temp;
+			}
+		}
+	}
+
+	return memoval;
 }
-
-string JoinedString::joinWords(vector<string> words)
+string JoinedString::joinWords(vector<string> wordsList)
 {
-    size_t len = words.size();
-    vector<string> dp(len);
-    
-    std::sort(words.begin(), words.end());
-    dp[0] = words[0];
-    for (size_t i = 1; i <= len; ++i)
-    {
-        string s1 = dp[i - 1];
+    len = wordsList.size();
+	vector<string> words;
 
-        for (size_t j = 0; j < len; ++j)
-        {
-            if (i-1 != j)
-            {
-                string s2 = words[j];
-                if (s1.find(s2) != string::npos) continue;
-                dp[i] = s1 + s2;
-                for (size_t k = 1, s1Size = s1.length(); k < s1Size; ++k)
-                {
-                    string sub1 = s1.substr(k, s1.size() - k);
-                    
-                    for (size_t kk = 0; kk < len; ++kk)
-                    {
-                        if (i-1 == kk) continue;
-                        
-                        string newStr = words[kk].substr(0, s1.size() - k);
-                        cout<<words[kk]<<endl;
-                        if (newStr.compare(sub1) == 0)
-                        {
-                            newStr = s1 + words[kk].substr(newStr.length(), words[kk].length() - newStr.length());
-                            //cout<<newStr<<endl;
-                            if (newStr.length() == dp[i].length())
-                            {
-                                dp[i] = lesser(dp[i], newStr);
-                            }
-                            else
-                            {
-                                dp[i] = newStr.length() > dp[i].length() ? dp[i] : newStr;
-                            }
-                            cout<<dp[i]<<endl;
-                        }
-                    }
-                }
-            }
-        }
-        
+	for (size_t i = 0; i < len; ++i)
+    {
+		bool ok = true;
+		for (size_t j = 0; j < len; ++j)
+		{
+			common[i][j] = "";
+			if (i != j)
+			{
+				if (wordsList[j].find(wordsList[i]) == string::npos)
+				{
+					ok = false;
+					break;
+				}
+			}
+		}
+
+		if (ok)
+		{
+			words.push_back(wordsList[i]);
+		}
+	}
+	len = words.size();
+	for (int i = 0; i < len; ++i)
+    {
+		for (int j = 0; j < 1<<len; ++j)
+		{
+			memo[i][j] = "";
+		}
+	}
+	for (size_t i = 0; i < len; ++i)
+    {
+		for (size_t j = 0; j < len; ++j)
+		{
+			if (i != j)
+			{
+				common[i][j] = words[j];
+				for (size_t t = 1, size = std::min(words[i], words[j]).length(); t < size; ++t)
+				{
+					string s1 = words[i].substr(t, words[i].length() - t);
+					string s2 = words[j].substr(0, words[i].length() - t);
+
+					if (s1.compare(s2) == 0)
+					{
+						common[i][j] = words[j].substr(s2.length(), words[j].length() - s2.length() + 1);
+						break;
+					}
+				}
+			}
+		}
     }
-    
-    return dp[len - 1];
+
+    string best = "";
+
+	for (size_t i = 0; i < len; ++i)
+	{
+		string temp = words[i] + dp(i, ((1 << len) - 1) ^ (1 << i));
+
+		if (best == "" || (temp.length() < best.length() || temp.length() == best.length() && temp < best))
+		{
+			best = temp;
+		}
+	}
+
+    return best;
 }
 
 void TEST(vector<string> words, string expected)
@@ -149,9 +187,6 @@ void Test7()
 
 int main()
 {
-    Test1();
-    Test2();
-    Test3();
     Test4();
     Test5();
     Test6();
