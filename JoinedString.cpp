@@ -11,8 +11,8 @@
 using namespace std;
 /* http://topcoder.bgcoder.com/print.php?id=1244 */
 #define SIZEOFSTRINGARRAY(s) sizeof(s)/sizeof(s[0])
-	string memo[12][1<<12];
-	string common[12][12];
+string memo[12][1<<12];
+string common[12][12];
 
 class JoinedString
 {
@@ -45,11 +45,11 @@ string JoinedString::dp(int current, int mask)
 }
 string JoinedString::joinWords(vector<string> wordsList)
 {
-    len = wordsList.size();
+	len = wordsList.size();
 	vector<string> words;
 
 	for (size_t i = 0; i < len; ++i)
-    {
+	{
 		bool ok = true;
 		for (size_t j = 0; j < len; ++j)
 		{
@@ -73,14 +73,14 @@ string JoinedString::joinWords(vector<string> wordsList)
 	}
 	len = words.size();
 	for (int i = 0; i < len; ++i)
-    {
+	{
 		for (int j = 0; j < 1<<len; ++j)
 		{
 			memo[i][j] = "";
 		}
 	}
 	for (size_t i = 0; i < len; ++i)
-    {
+    	{
 		for (size_t j = 0; j < len; ++j)
 		{
 			if (i != j)
@@ -99,9 +99,9 @@ string JoinedString::joinWords(vector<string> wordsList)
 				}
 			}
 		}
-    }
+    	}
 
-    string best = "";
+    	string best = "";
 
 	for (size_t i = 0; i < len; ++i)
 	{
