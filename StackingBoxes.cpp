@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <time.h>
 using namespace std;
-/* https://www.topcoder.com/stat?c=problem_statement&pm=4700&rd=7995 */
+/* http://community.topcoder.com/stat?c=problem_statement&pm=4660&rd=7995 */
 #define SIZEOFSTRINGARRAY(s) sizeof(s)/sizeof(s[0])
 
 struct Box
