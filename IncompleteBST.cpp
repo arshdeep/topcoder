@@ -57,16 +57,17 @@ vector<node> IncompleteBST::parseNodes(vector<string> list)
 bool IncompleteBST::isBST(const vector<node> &tree, int root, int min, int max) const
 {
 	vector<node>::const_iterator itr = std::find(tree.begin(), tree.end(), root);
-	if (itr == tree.end() || itr->ch == '?')
+	if (itr == tree.end())
 	{
 		return true;
 	}
 
-	if (itr->ch < min || itr->ch > max)
+	if (itr->ch != '?' && (itr->ch < min || itr->ch > max))
 		return false;
 
-	return isBST(tree, itr->i*2, min, itr->ch) && isBST(tree, itr->i*2 + 1, itr->ch, max);
+	return isBST(tree, itr->i*2, min, itr->ch == '?' ? max : itr->ch + 1) && isBST(tree, itr->i*2 + 1, itr->ch == '?' ? min : itr->ch + 1, max);
 }
+
 string getMissing(const vector<node> &tree)
 {
 	vector<node>::const_iterator itr = std::find(tree.begin(), tree.end(), '?');
@@ -233,9 +234,16 @@ void Test11()
 
 void Test12()
 {
-	string test[] = {"B 1", "A 2", "? 3"};
+	string test[] = {"? 1", "Y 2", "X 4", "W 8", "V 16", "U 32", "T 64", "S 128", "R 256", "Q 512", "P 1024", "O 2048", "N 4096", "M 8192", "L 16384", "K 32768", "J 65536", "K 65537"};
 
-	TEST(convert(test, SIZEOFARRAY(test)), "CDEFGHIJKLMNOPQRSTUVWXYZ");
+	TEST(convert(test, SIZEOFARRAY(test)), "");
+}
+
+void Test13()
+{
+	string test[] = {"V 6", "A 2", "? 1", "H 5", "X 3", "J 21", "N 23", "K 11", "C 10", "A 4"};
+
+	TEST(convert(test, SIZEOFARRAY(test)), "");
 }
 
 int main()
@@ -252,6 +260,7 @@ int main()
 	Test10();
 	Test11();
 	Test12();
+	Test13();
 	cout<<"success";
 
 	getchar();
