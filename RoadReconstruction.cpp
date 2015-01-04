@@ -17,9 +17,12 @@
 #include <cassert>
 using namespace std;
 /* https://www.topcoder.com/stat?c=problem_statement&pm=7921 */
+/* https://www.topcoder.com/tc?module=Static&d1=tutorials&d2=disjointDataStructure */
 #define SIZEOFARRAY(s) sizeof(s)/sizeof(s[0])
 #define memSet(a, val) memset(a, val, sizeof(a))
 using namespace std;
+
+#ifdef PRIM 
 int weight[50][50];
 string idMap[50][50];
 bool visited[50];
@@ -84,17 +87,10 @@ void RoadReconstruction::parseInput(const vector<string> &roads)
 		int city1 = cityID(road1);
 		int city2 = cityID(road2);
 
-		if (weight[city1][city2] != -2)
+		if (weight[city1][city2] > cost || weight[city1][city2] == -1 || (weight[city1][city2] == cost && idMap[city1][city2] > id))
 		{
-			if (weight[city1][city2] > cost || weight[city1][city2] == -1 || (weight[city1][city2] == cost && idMap[city1][city2] > id))
-			{
-				weight[city1][city2] = weight[city2][city1] = cost;
-				idMap[city1][city2] = idMap[city2][city1] = id;
-			}
-		}
-		else
-		{
-			weight[city1][city2] = weight[city2][city1] = -2;
+			weight[city1][city2] = weight[city2][city1] = cost;
+			idMap[city1][city2] = idMap[city2][city1] = id;
 		}
 	}
 }
@@ -174,6 +170,151 @@ string RoadReconstruction::selectReconstruction(const vector<string> &roads)
 	}
 	return ret;
 }
+#else
+#define ALL(a) a.begin(), a.end()
+#define REP(size) for (int i = 0; i < (int)size; ++i)
+class RoadReconstruction
+{
+	int rank[51];
+	int parent[51];
+	vector<pair<int, int>> ok;
+	vector< pair< int, pair<string, pair<int, int>> > > edges;
+	map<string, int> mapping;
+	int roadCount;
+	int cityID(string city);
+	void parseInput(const vector<string> &roads);
+	string kruskalMST();
+	void unionSet(int a, int b);
+	int findSet(int x);
+public:
+	RoadReconstruction()
+	{
+		roadCount = 0;
+		memSet(rank, 0);
+	}
+
+	string selectReconstruction(const vector<string> &roads);
+};
+
+int RoadReconstruction::cityID(string city)
+{
+	map<string, int>::iterator itr = mapping.find(city);
+	if (itr != mapping.end()) return itr->second;
+
+	mapping.insert(make_pair(city, roadCount++));
+
+	return roadCount - 1;
+}
+
+void RoadReconstruction::parseInput(const vector<string> &roads)
+{
+	for (size_t i = 0, size = roads.size(); i < size; ++i)
+	{
+		istringstream iss(roads[i]);
+		string id, road1, road2;
+		size_t cost = 0;
+
+		iss >> id;
+		iss >> road1;
+		iss >> road2;
+		if (!iss.eof())
+			iss >> cost;
+		int city1 = cityID(road1);
+		int city2 = cityID(road2);
+
+		if (cost == 0)
+		{
+			ok.push_back(make_pair(city1, city2));
+		}
+		else
+		{
+			edges.push_back(make_pair(cost, make_pair(id, make_pair(city1, city2) ) ) );
+		}
+	}
+}
+
+void RoadReconstruction::unionSet(int a, int b)
+{
+	int min = std::min(a, b);
+	int max = std::max(a, b);
+
+	rank[max] += rank[min];
+	rank[min] = 1;
+	parent[min] = parent[max];
+}
+
+int RoadReconstruction::findSet(int x)
+{
+	if (parent[x] != x)
+		parent[x] = findSet(parent[x]);
+	return parent[x];
+}
+
+string RoadReconstruction::kruskalMST()
+{
+	int mergedSets = 0;
+	REP(ok.size())
+	{
+		pair<int, int> city = ok[i];
+		int set1 = findSet(city.first);
+		int set2 = findSet(city.second);
+		if (set1 != set2)
+		{
+			unionSet(set1, set2);
+			++mergedSets;
+		}
+	}
+	vector<string> result;
+	REP(edges.size())
+	{
+		if (mergedSets == roadCount - 1)
+			break;
+		pair<int, int> city = edges[i].second.second;
+		int set1 = findSet(city.first);
+		int set2 = findSet(city.second);
+		if (set1 != set2)
+		{
+			unionSet(set1, set2);
+			++mergedSets;
+			result.push_back(edges[i].second.first);
+		}
+	}
+	if (mergedSets == roadCount - 1)
+	{
+		sort(ALL(result));
+		string ret = "";
+		REP(result.size())
+		{
+			if (ret.length() == 0)
+			{
+				ret = result[i];
+			}
+			else
+			{
+				ret += " ";
+				ret += result[i];
+			}
+		}
+
+		return ret;
+	}
+	else
+		return "IMPOSSIBLE";
+}
+
+string RoadReconstruction::selectReconstruction(const vector<string> &roads)
+{
+	parseInput(roads);
+	REP(roadCount)
+	{
+		parent[i] = i;
+	}
+
+	sort(ALL(edges));
+
+	return kruskalMST();
+}
+#endif
 
 void TEST(vector<string> roads, string expected)
 {
