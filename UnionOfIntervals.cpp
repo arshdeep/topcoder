@@ -1,75 +1,152 @@
-#include <climits>
 #include <iostream>
+#include <cstdio>
 #include <vector>
-#include <string>
+#include <cassert>
+#include <sstream>
+#include <set>
+#include <unordered_map>
+#include <map>
 #include <algorithm>
-#include <numeric>
+#include <time.h>
 using namespace std;
-/* nthElement https://www.topcoder.com/stat?c=problem_statement&pm=4823&rd=8074 */
+/* https://www.topcoder.com/stat?c=problem_statement&pm=4823&rd=8074 */
+#define SIZEOFARRAY(s) sizeof(s)/sizeof(s[0])
+#define REP(i,n) for(int i=0;i<(n);++i)
+#define LOOP(i,v,n) for(i=v;i<(n);++i)
+#define LL long long
 
-int nthElement(vector<int> lowerBound, vector<int> upperBound, int n)
+int nthElement(vector<int> &lowerBound, vector<int> &upperBound, int n)
 {
-	int lo = INT_MIN;
-	int hi = INT_MAX;
-	int itr = 0;
-	while (lo < hi)
-	{
-		++itr;
-		long count = 0;
-		int x = (hi + lo + 1) /2;
-
-		for (int i = 0, size = lowerBound.size(); i < size; ++i)
-		{
-			if (x >= lowerBound[i] && x <= upperBound[i])
-			{
-				count += (long)x - lowerBound[i];
-			}
-			else if (x > lowerBound[i] && x > upperBound[i])
-			{
-				count += upperBound[i] - lowerBound[i];
-			} 
-		}
-
-		if (count <= n)
-			lo = x;
-		else
-			hi = x - 1;
-	}
-	cout<<"Iterations :"<<itr<<endl;
-	return lo;
+    LL lo = INT_MIN;
+    LL hi = INT_MAX;
+    int itr = 0;
+    
+    while (lo <= hi)
+    {
+        ++itr;
+        LL count = 0;
+        long x = (hi + lo) /2;
+        
+        REP(i, (int)lowerBound.size())
+        {
+            if (x >= lowerBound[i] && x <= upperBound[i])
+            {
+                count += x - lowerBound[i] + 1;
+            }
+            else if (x > lowerBound[i] && x > upperBound[i])
+            {
+                count += upperBound[i] - lowerBound[i] + 1;
+            }
+        }
+        
+        if (count > n)
+            hi = x - 1;
+        else
+            lo = x + 1;
+    }
+    //cout<<"Iterations :"<<itr<<endl;
+    return (int)lo;
 }
 
-int main(int argc, char *argv[])
+void TEST(vector<int> lowerBound, vector<int> upperBound, int n, int expected)
 {
-	vector<int> lowerBound;
-	vector<int> hBound;
+    clock_t start, end;
+    double cpu_time_used;
+    
+    start = clock();
+    
+    int result = nthElement(lowerBound, upperBound, n);
+    
+    assert( result == expected );
+    
+    end = clock();
+    cpu_time_used = ((double) (end - start));
+    cout<<"Time taken : "<<cpu_time_used<<endl;
+}
 
-	lowerBound.push_back(1);
-	lowerBound.push_back(2);
+template <class T>
+vector<T> convert(T *list, int n)
+{
+    vector<T> ret;
+    
+    for (int i = 0; i< n; ++i)
+    {
+        ret.push_back(list[i]);
+    }
+    
+    return ret;
+}
 
-	hBound.push_back(3);
-	hBound.push_back(7);
+void Test1()
+{
+    int up[] = { 1, 5 };
+    int hi[] = { 3, 7 };
+    
+    TEST(convert(up, SIZEOFARRAY(up)), convert(hi, SIZEOFARRAY(hi)), 4, 6);
+}
 
-	cout<<nthElement(lowerBound, hBound, 4)<<endl;
+void Test2()
+{
+    int up[] = { 1, 3 };
+    int hi[] = { 4, 5 };
+    
+    TEST(convert(up, SIZEOFARRAY(up)), convert(hi, SIZEOFARRAY(hi)), 3, 3);
+}
 
-	lowerBound.clear();
-	hBound.clear();
-	lowerBound.push_back(1);
-	lowerBound.push_back(3);
+void Test3()
+{
+    int up[] = { -1500000000 };
+    int hi[] = { 1500000000 };
+    
+    TEST(convert(up, SIZEOFARRAY(up)), convert(hi, SIZEOFARRAY(hi)), 1500000091, 91);
+}
 
-	hBound.push_back(4);
-	hBound.push_back(5);
+void Test4()
+{
+    int up[] = {-456, -82481, 484, 399};
+    int hi[] = {19342, 200, 8484, 1000};
+    TEST(convert(up, SIZEOFARRAY(up)), convert(hi, SIZEOFARRAY(hi)), 44444, -38037);
 
-	cout<<nthElement(lowerBound, hBound, 3)<<endl;
+}
 
-	lowerBound.clear();
-	hBound.clear();
-	lowerBound.push_back(-1500000000);
+void Test5()
+{
+    int up[] = 	{-2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000};
+    int hi[] = {2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000};
+    TEST(convert(up, SIZEOFARRAY(up)), convert(hi, SIZEOFARRAY(hi)), 0, -2000000000);
+}
 
-	hBound.push_back(1500000000);
+void Test6()
+{
+    int up[] = 	{-2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000};
+    int hi[] = {2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000};
+    TEST(convert(up, SIZEOFARRAY(up)), convert(hi, SIZEOFARRAY(hi)), 49, -2000000000);
+}
 
-	cout<<nthElement(lowerBound, hBound, 1500000091)<<endl;
+void Test7()
+{
+    int up[] = 	{-2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000};
+    int hi[] = {2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000, 2000000000};
+    TEST(convert(up, SIZEOFARRAY(up)), convert(hi, SIZEOFARRAY(hi)), 1999999999, -1960000001);
+}
 
-	getchar(); 
-   return 0;
+void Test8()
+{
+    int up[] = 	{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50};
+    int hi[] =  {99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 89, 88, 87, 86, 85, 84, 83, 82, 81, 80, 79, 78, 77, 76, 75, 74, 73, 72, 71, 70, 69, 68, 67, 66, 65, 64, 63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51, 50};
+    TEST(convert(up, SIZEOFARRAY(up)), convert(hi, SIZEOFARRAY(hi)), 1226, 50);
+}
+
+int main()
+{
+    Test1();
+    Test2();
+    Test3();
+    Test4();
+    Test5();
+    Test6();
+    Test7();
+    Test8();
+    cout<<"success";
+    return 0;
 }
