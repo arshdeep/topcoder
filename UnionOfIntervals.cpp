@@ -21,17 +21,17 @@ int nthElement(vector<int> &lowerBound, vector<int> &upperBound, int n)
     LL hi = INT_MAX;
     int itr = 0;
     
-    while (lo <= hi)
+    while (lo < hi)
     {
         ++itr;
         LL count = 0;
-        long x = (hi + lo) /2;
+        LL x = lo + (hi - lo + 1) /2;
         
         REP(i, (int)lowerBound.size())
         {
             if (x >= lowerBound[i] && x <= upperBound[i])
             {
-                count += x - lowerBound[i] + 1;
+                count += x - lowerBound[i];
             }
             else if (x > lowerBound[i] && x > upperBound[i])
             {
@@ -39,10 +39,10 @@ int nthElement(vector<int> &lowerBound, vector<int> &upperBound, int n)
             }
         }
         
-        if (count > n)
-            hi = x - 1;
+        if (count <= n)
+            lo = x;
         else
-            lo = x + 1;
+            hi = x - 1;
     }
     //cout<<"Iterations :"<<itr<<endl;
     return (int)lo;
@@ -148,5 +148,6 @@ int main()
     Test7();
     Test8();
     cout<<"success";
+	getchar();
     return 0;
 }
