@@ -30,3 +30,41 @@ r = (v ^ -fNegate) + fNegate;
 Swapping values with XOR
 #define SWAP(a, b) (((a) ^= (b)), ((b) ^= (a)), ((a) ^= (b)))
 --
+Thus the following pseudocode prints all the subsets of a given set ( this set is known as a power set )
+ 
+start
+    A[ 0..n-1 ] //set of n-elements
+    for i := 0 to 2n
+        print “subset no. i”
+        for j := 0 to n
+            if j-th bit is set in i
+                print A[j]    
+        end for
+        print “\n”
+    end for
+end
+
+-----
+
+Generating all subsets of a subset.
+Consider a number 10110
+The following numbers are subsets of this number
+00000
+00010
+00100
+00110
+10000
+10010
+10100
+10110
+Now there's a nice and short way of generating them as shown below:
+start
+    N; //an integer
+    X = N
+    while true
+        print X
+        if( X == 0 )
+            break;
+        X = (X-1) & N;
+    end while
+end
