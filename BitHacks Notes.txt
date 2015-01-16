@@ -31,7 +31,7 @@ Swapping values with XOR
 #define SWAP(a, b) (((a) ^= (b)), ((b) ^= (a)), ((a) ^= (b)))
 --
 Thus the following pseudocode prints all the subsets of a given set ( this set is known as a power set )
- 
+ //http://apps.topcoder.com/forums/;jsessionid=A2B903304231487272697FC9A2D20D05?module=Thread&threadID=671150&start=0&mc=18#1886133
 String[] set={"apple", "banana", "carrot"};
 int n=set.length;
  
