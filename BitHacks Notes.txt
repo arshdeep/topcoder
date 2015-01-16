@@ -32,17 +32,26 @@ Swapping values with XOR
 --
 Thus the following pseudocode prints all the subsets of a given set ( this set is known as a power set )
  
-start
-    A[ 0..n-1 ] //set of n-elements
-    for i := 0 to 2n
-        print “subset no. i”
-        for j := 0 to n
-            if j-th bit is set in i
-                print A[j]    
-        end for
-        print “\n”
-    end for
-end
+String[] set={"apple", "banana", "carrot"};
+int n=set.length;
+ 
+// iterate over all the subsets
+for (int i=0; i < (1<<n); i++)
+{
+    // generate the i-th subset
+    Vector subset=new Vector();
+    for (int k=0; k < n; k++)
+    {
+        if ((i&(1<<k)) > 0)
+            subset.add(set[k]);
+    }
+            
+    // perform an action over the subset, here just print it
+    System.out.print("Subset "+i+":");
+    for (int k=0; k<subset.size(); k++)
+        System.out.print(" "+subset.get(k));
+    System.out.println();
+}
 
 -----
 
