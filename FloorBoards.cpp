@@ -10,188 +10,177 @@
 #include <time.h>
 #include <stdlib.h>
 using namespace std;
-/* http://community.topcoder.com/stat?c=problem_statement&pm=8516&rd=11124 */
+/* http://community.topcoder.com/stat?c=problem_statement&pm=6095&rd=9917 */
 #define SIZEOFARRAY(s) sizeof(s)/sizeof(s[0])
 #define REP(i,n) for(int i=0;i<(n);++i)
 #define LOOP(i,v,n) for(i=v;i<(n);++i)
 #define LL long long
 #define memSet(m, v) memset(m, v, sizeof(m))
 
-int howFar[15][51];
-//bool canpaint[51][1<<15];
+int memo[1<<10][10][10];
 
-class PaintingBoards
+class FloorBoards
 {
-	int mBoardLen;
-	int mPainters;
-
-	bool canPaint(const vector<int> &boardLength, const vector<int> &painterSpeed, double time)
-	{
-		int k = 0;
-		REP(i, mBoardLen)
-		{
-			REP(j, mPainters)
-			{
-				int dist = 0;
-				double maxDist = time * painterSpeed[j];
-				LOOP(k, i, mBoardLen)
-				{
-					dist += boardLength[k];
-					if (maxDist < dist) break;
-				}
-				howFar[i][j] = k;
-			}
-		}
-		vector< vector <int> > canpaint(mBoardLen + 1, vector<int>(1 << mPainters));
-		canpaint[0][0] = true;
-		REP(i, mBoardLen)
-		{
-			REP(j, (1 << mPainters))
-			{
-				if (!canpaint[i][j]) continue;
-
-				REP(k, mPainters)
-				{
-					if ((j & (1 << k)) == 0)
-					{
-						canpaint[ howFar[i][k] ][j | (1 << k)] = true;
-					}
-				}
-			}
-		}
-		int j = 0;
-		REP(j, (1 << mPainters))
-		{
-			if (canpaint[mBoardLen][j])
-				return true;
-		}
-
-		return false;
-	}
-public:
-	double minimalTime(vector<int> boardLength, vector<int> painterSpeed)
-	{
-		memSet(howFar, 0);
-		//memSet(canpaint, 0);
-
-		mBoardLen = (int)boardLength.size();
-		mPainters = (int)painterSpeed.size();
+    size_t mWidth;
+    size_t mHeight;
+    
+    int solve(int i, int j, int mask, const vector<string> &mat)
+    {
+        if (i == mHeight) return 0;
+        int &memv = memo[mask][i][j];
         
-		double start = 0;
-		double end = 50000;
+        if (memv != -1) return memv;
+        
+        if (mat[i][j] == '#')
+            return solve(i + (j + 1) / mWidth, (j + 1) % mWidth, mask & ~(1 << j), mat);
 
-		while (end - start > 1e-11)
-		{
-			double mid = start + (end - start) / 2;
-
-			if (canPaint(boardLength, painterSpeed, mid))
-				end = mid;
-			else
-				start = mid;
-		}
-		return end;
-	}
+        int vertical = solve(i + (j + 1) / mWidth, (j + 1) % mWidth, mask | (1 << j), mat);
+        
+        if ((mask & (1 << j)) == 0)
+            ++vertical;
+        int horizontal = solve(i + (j + 1) / mWidth, (j + 1) % mWidth, mask & ~(1 << j), mat);
+        
+        if (j == 0 || mat[i][j - 1] == '#' || (mask & (1 << (j - 1))) != 0)
+            ++horizontal;
+        
+        memv = std::min(horizontal, vertical);
+        
+        return memv;
+    }
+public:
+    int howMany(vector<string> mat)
+    {
+        mWidth = mat[0].length();
+        mHeight = mat.size();
+        
+        memSet(memo, -1);
+        return solve(0, 0, 0, mat);
+    }
 };
 
-void TEST(vector<int> boardLength, vector<int> painterSpeed, double expected)
+void TEST(vector<string> mat, int expected)
 {
-	clock_t start, end;
-	double cpu_time_used;
+    clock_t start, end;
+    double cpu_time_used;
     
-	start = clock();
-	PaintingBoards paintingBoards;
-	double result = paintingBoards.minimalTime(boardLength, painterSpeed);
-    cout<<result<< " "<< expected<<endl;
-	//assert(result - expected <= 1e-12);
+    start = clock();
+    FloorBoards floorBoards;
+    int result = floorBoards.howMany(mat);
     
-	end = clock();
-	cpu_time_used = ((double)(end - start));
-	cout << "Time taken : " << cpu_time_used << endl;
+    assert(result == expected);
+    
+    end = clock();
+    cpu_time_used = ((double)(end - start));
+    cout << "Time taken : " << cpu_time_used << endl;
 }
 
 template <class T>
 vector<T> convert(T *list, int n)
 {
-	vector<T> ret;
+    vector<T> ret;
     
-	for (int i = 0; i< n; ++i)
-	{
-		ret.push_back(list[i]);
-	}
+    for (int i = 0; i< n; ++i)
+    {
+        ret.push_back(list[i]);
+    }
     
-	return ret;
+    return ret;
 }
 
 void Test1()
 {
-	int boardLength[] = {5,3,2};
-	int painterSpeed[] = {2,3,5};
-	TEST(convert(boardLength, SIZEOFARRAY(boardLength)),
-			convert(painterSpeed, SIZEOFARRAY(painterSpeed)), 1.0);
+    string test[] = { "....."
+        , "....."
+        , "....."
+        , "....."
+        , "....." };
+    TEST(convert(test, SIZEOFARRAY(test)), 5);
 }
 
 void Test2()
 {
-	int boardLength[] = {1,2,1,4,2,1,1};
-	int painterSpeed[] = {1,2,3};
-	TEST(convert(boardLength, SIZEOFARRAY(boardLength)),
-			convert(painterSpeed, SIZEOFARRAY(painterSpeed)), 2.0);
+    string test[] = { "......."
+        , ".#..##."
+        , ".#....."
+        , ".#####."
+        , ".##..#."
+        , "....###" };
+    TEST(convert(test, SIZEOFARRAY(test)), 7);
 }
 
 void Test3()
 {
-	int boardLength[] = {3,3,20};
-	int painterSpeed[] = {9,1};
-	TEST(convert(boardLength, SIZEOFARRAY(boardLength)),
-			convert(painterSpeed, SIZEOFARRAY(painterSpeed)), 2.888888888888889);
+    string test[] = { "####"
+        , "####"
+        , "####"
+        , "####" };
+    TEST(convert(test, SIZEOFARRAY(test)), 0);
 }
 
 void Test4()
 {
-	int boardLength[] = {40, 46, 82, 89, 33, 46, 3, 50, 95,
-		81, 69, 40, 94, 93, 90, 98, 17, 34,
-		45, 18, 93, 28, 43, 38, 35};
-	int painterSpeed[] = {49, 51, 35, 27, 48, 36, 54, 10};
-	TEST(convert(boardLength, SIZEOFARRAY(boardLength)),
-			convert(painterSpeed, SIZEOFARRAY(painterSpeed)), 4.686274509803922);
+    string test[] = { "...#.."
+        , "##...."
+        , "#.#..."
+        , ".#...."
+        , "..#..."
+        , "..#..#" }
+    ;
+    TEST(convert(test, SIZEOFARRAY(test)), 9);
 }
 
 void Test5()
 {
+    string test[] = { ".#...."
+        , "..#..."
+        , ".....#"
+        , "..##.."
+        , "......"
+        , ".#..#." };
+    TEST(convert(test, SIZEOFARRAY(test)), 9);
 }
 
 void Test6()
 {
+    string test[] = {"..........", ".....#..#.", "...#...#.#", ".#....##.#", "#.........", "..##..#...", "...###..#.", "#..#.....#", "#..##..#..", "..##......"};
+    TEST(convert(test, SIZEOFARRAY(test)), 22);
 }
 
 void Test7()
 {
+    string test[] = 	{"......#..#", "..###.....", "......#.#.", "#..#.#...#", "..##..##..", "#.........", ".#.#.###..", "..##.#.#..", ".........#", ".....#..##"};
+    TEST(convert(test, SIZEOFARRAY(test)), 23);
 }
 
 void Test8()
 {
+    string test[] = {"###...#..#", "##.....#.#", "#.....#.#.", "....#..#..", ".#.#......", ".##....##.", "...#......", ".#..#.....", ".#......#.", "##....#..#"};
+    TEST(convert(test, SIZEOFARRAY(test)), 21);
 }
 
 void Test9()
 {
+    string test[] = {"..#.......", ".#.....#..", "...#..#...", "#.##..#...", "...##..#..", ".##...#..#", "#......#..", ".#...#.#..", "##...#....", ".###.#..#."};
+    TEST(convert(test, SIZEOFARRAY(test)), 24);
 }
 
 void Test10()
 {
+    string test[] = 	{".#..#..#..", "###.#.####", "##..#.....", "###.#.###.", "#...#..##.", "###.#.###.", "##..#...#.", "###.#.###.", "#......##.", "#########."};
+    TEST(convert(test, SIZEOFARRAY(test)), 14);
 }
 int main()
 {
-	Test1();
-	Test2();
-	Test3();
-	Test4();
-	Test5();
-	Test6();
-	Test7();
-	Test8();
-	Test9();
-	Test10();
-	getchar();
-	cout << "success";
-	return 0;
+    Test1();
+    Test2();
+    Test3();
+    Test4();
+    Test5();
+    Test6();
+    Test7();
+    Test8();
+    Test9();
+    Test10();
+    cout << "success";
+    return 0;
 }
