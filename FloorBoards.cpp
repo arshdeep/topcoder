@@ -10,7 +10,7 @@
 #include <time.h>
 #include <stdlib.h>
 using namespace std;
-/* http://community.topcoder.com/stat?c=problem_statement&pm=6095&rd=9917 */
+/* http://topcoder.bgcoder.com/print.php?id=1999 */
 #define SIZEOFARRAY(s) sizeof(s)/sizeof(s[0])
 #define REP(i,n) for(int i=0;i<(n);++i)
 #define LOOP(i,v,n) for(i=v;i<(n);++i)
