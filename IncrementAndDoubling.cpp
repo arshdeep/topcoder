@@ -35,10 +35,8 @@ public:
         
         int max = *(std::max_element(desiredArray.begin(), desiredArray.end()));
         
-        int a = __builtin_clz(max);
-        res += ((sizeof(int) * 8) - a);
+        res += ((sizeof(int) * 8) - __builtin_clz(max)) - 1;
         
-        --res;
         return res;
     }
 };
