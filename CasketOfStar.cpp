@@ -19,10 +19,11 @@ using namespace std;
 #define LL uint64_t
 #define memSet(m, v) memset(m, v, sizeof(m))
 
+//O(n^3) === chain matrix mul
 int dp[60][60];
 class CasketOfStar
 {
-	int solve(vector<int> weight, int a, int b)
+	int solveRec(vector<int> weight, int a, int b)
 	{
 		if (b == a + 1) return 0;
 		int &val = dp[a][b];
@@ -32,16 +33,38 @@ class CasketOfStar
 
 		for (int i = a + 1; i < b; ++i)
 		{
-			val = std::max(val, weight[a] * weight[b] + solve(weight, a, i) + solve(weight, i, b));
+			val = std::max(val, weight[a] * weight[b] + solveRec(weight, a, i) + solveRec(weight, i, b));
 		}
 
 		return val;
 	}
+	int solve(vector<int> weight)
+	{
+		int SIZE = weight.size();
+		for (int gap = 1; gap < SIZE; ++gap)
+		{
+			for (int i = 0, j = gap; j < SIZE; ++j, ++i)
+			{
+				if (i + 1 == j)
+					dp[i][j] = 0;
+				else
+				{
+					for (int k = i; k < j; ++k)
+					{
+						dp[i][j] = std::max(dp[i][j], dp[i][k] + dp[k][j]);
+					}
+					dp[i][j] += weight[i] * weight[j];
+				}
+			}
+		}
+		return dp[0][SIZE - 1];
+	}
+
 public:
 	int maxEnergy(vector<int> weight)
 	{
-		memSet(dp, -1);
-		return solve(weight, 0, weight.size() - 1);
+		memSet(dp, 0);
+		return solve(weight);
 	}
 };
 
