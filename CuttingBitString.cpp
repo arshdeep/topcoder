@@ -32,11 +32,10 @@ class CuttingBitString
 				num |= 1;
 		}
 
-		if (num > 5)
-			while (num % 5 == 0)
-				num /= 5;
+		while (num % 5 == 0)
+			num /= 5;
 
-		return num == 1 || num == 5;
+		return num == 1;
 	}
 public:
 	int getmin(string S)

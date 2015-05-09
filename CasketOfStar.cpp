@@ -19,52 +19,29 @@ using namespace std;
 #define LL uint64_t
 #define memSet(m, v) memset(m, v, sizeof(m))
 
+int dp[60][60];
 class CasketOfStar
 {
-	int sizeVect;
-	map<LL, int> memo;
-	int leadingZero(LL flag, int start)
+	int solve(vector<int> weight, int a, int b)
 	{
-		for (int i = start; i >= 0; --i)
-		{
-			if ( (flag & ((LL)1 << i)) == 0 )
-				return i;
-		}
-	}
+		if (b == a + 1) return 0;
+		int &val = dp[a][b];
 
-	int trailZero(uint64_t flag, int start)
-	{
-		for (int i = start; i < sizeVect; ++i)
-		{
-			if ( (flag & ((LL)1 << i)) == 0 )
-				return i;
-		}
-	}
-	int solve(vector<int> weight, LL flag)
-	{
-		map<LL, int>::iterator itr = memo.find(flag);
+		if (val != -1)
+			return val;
 
-		if ( itr != memo.end() )
-			return itr->second;
-
-		int res = INT_MIN;
-		for (int i = 1, size = sizeVect - 1; i < size; ++i)
+		for (int i = a + 1; i < b; ++i)
 		{
-			int energy = 0;
-			if ( (flag & ((LL)1 << i)) == 0 ) {
-				energy = weight[ leadingZero(flag, i - 1) ] * weight[ trailZero(flag, i + 1) ];
-				energy += solve(weight, flag | ((LL)1 << i));
-			}
-			res = std::max(energy, res);
+			val = std::max(val, weight[a] * weight[b] + solve(weight, a, i) + solve(weight, i, b));
 		}
-		memo.insert( make_pair(flag, res) );
-		return res;
+
+		return val;
 	}
 public:
 	int maxEnergy(vector<int> weight)
 	{
-		sizeVect = weight.size();
-		return solve(weight, 0);
+		memSet(dp, -1);
+		return solve(weight, 0, weight.size() - 1);
 	}
 };
 
@@ -148,6 +125,8 @@ void Test8()
 
 void Test9()
 {
+	int test[] = 	{457, 470, 453, 455, 452, 464, 450, 449, 449, 458, 448, 467, 466, 451, 469, 450, 451, 466, 459, 451, 466, 461, 452, 460, 457, 465, 453, 470, 464, 453, 468, 448, 462, 451, 455, 465, 448, 463, 448, 449, 468, 458, 463, 463, 459, 451, 451, 448, 448, 462};
+	TEST(convert(test, SIZEOFARRAY(test)), 10358879 );
 }
 
 void Test10()
